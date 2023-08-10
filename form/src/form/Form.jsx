@@ -24,6 +24,7 @@ const Form = ({
 
     return <div>
         <div>
+            <h1>User Data</h1>
             <p>First name: {firstName}</p>
             <p>Last name: {lastName}</p>
             <p>Email: {email}</p>
