@@ -1,8 +1,26 @@
-import React, {useCallback, useMemo, useState} from 'react';
+import React, {useCallback, useMemo} from 'react';
 import {connect} from 'react-redux';
+import validator from 'validator';
+import {UserActions} from "../store/reducers/userReducer";
 
+const Form = ({
+                  firstName,
+                  lastName,
+                  email,
+                  message,
+                  updateUserData,
+                  saveUserData
+              }) => {
 
-const Form = ({firstName, lastName, email, message, updateFirstName, updateLastName, updateEmail, updateMessage}) => {
+    const userDataChangeHandler = useCallback((e, action) => {
+        updateUserData(action, e.target.value)
+    }, [])
+
+    const isValid = useMemo(() => validator.isLength(firstName, {min: 1})
+        && validator.isLength(lastName, {min: 1})
+        && validator.isEmail(email, {min: 1})
+        && validator.isLength(message, {min: 10}), [firstName, lastName, email, message])
+
 
     return <div>
         <div>
@@ -13,14 +31,19 @@ const Form = ({firstName, lastName, email, message, updateFirstName, updateLastN
         </div>
         <form>
             <label htmlFor="firstName">First name:</label><br/>
-            <input type="text" id="firstName" name="firstName" onChange={(e) => updateFirstName(e.target.value)}
+            <input type="text" id="firstName" name="firstName"
+                   onChange={(e) => userDataChangeHandler(e, UserActions.UPDATE_FIRST_NAME)}
                    required/><br/>
             <label htmlFor="lastName">Last name:</label><br/>
-            <input type="text" id="lastName" name="lastName" onChange={(e) => updateLastName(e.target.value)} required/><br/>
+            <input type="text" id="lastName" name="lastName"
+                   onChange={(e) => userDataChangeHandler(e, UserActions.UPDATE_LAST_NAME)} required/><br/>
             <label htmlFor="email">Email:</label><br/>
-            <input type="email" id="email" name="email" onChange={(e) => updateEmail(e.target.value)} required/><br/>
+            <input type="email" id="email" name="email"
+                   onChange={(e) => userDataChangeHandler(e, UserActions.UPDATE_EMAIL)} required/><br/>
             <label htmlFor="message">Message:</label><br/>
-            <textarea id="message" name="message" rows="5" onChange={(e) => updateMessage(e.target.value)}/>
+            <textarea id="message" name="message" rows="5"
+                      onChange={(e) => userDataChangeHandler(e, UserActions.UPDATE_MESSAGE)}/><br/>
+            <button disabled={!isValid} onClick={saveUserData}>Submit</button>
         </form>
     </div>
 };
@@ -35,11 +58,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        updateFirstName: (firstName) => dispatch({type: 'UPDATE_FIRST_NAME', payload: firstName}),
-        updateLastName: (lastName) => dispatch({type: 'UPDATE_LAST_NAME', payload: lastName}),
-        updateEmail: (email) => dispatch({type: 'UPDATE_EMAIL', payload: email}),
-        updateMessage: (message) => dispatch({type: 'UPDATE_MESSAGE', payload: message}),
-        saveUserData: () => dispatch({type: 'SAVE_USER_DATA'}), // Add this action
+        updateUserData: (action, payload) => dispatch({type: action, payload: payload}),
+        saveUserData: () => dispatch({type: 'SAVE_USER_DATA'}),
     };
 };
 export default connect(mapStateToProps, mapDispatchToProps)(Form);
