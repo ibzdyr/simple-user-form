@@ -21,10 +21,9 @@ const Form = ({
         && validator.isEmail(email, {min: 1})
         && validator.isLength(message, {min: 10}), [firstName, lastName, email, message])
 
-
     return <div>
         <div>
-            <h1>User Data</h1>
+            <h1>First name: {firstName}</h1>
             <p>First name: {firstName}</p>
             <p>Last name: {lastName}</p>
             <p>Email: {email}</p>
